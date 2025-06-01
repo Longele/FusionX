@@ -90,12 +90,12 @@
     .item {
       display: flex;
       align-items: center;
-      background: var(--card); /* ✔ fond adaptatif */
+      background: var(--card);
       padding: 8px;
       border-radius: 8px;
       gap: 10px;
       cursor: grab;
-      color: var(--text-dark); /* ✔ texte toujours lisible */
+      color: var(--text-dark);
       border: 1px solid #ccc;
     }
 
@@ -172,7 +172,7 @@
 
     <div class="options">
       <label><input type="checkbox" id="fitA4" /> Adapter les images à A4</label>
-      <span class="switch" onclick="toggleTheme()">🌓 Mode sombre</span>
+      <span class="switch" id="themeToggle" onclick="toggleTheme()">🌙 Activer le mode sombre</span>
     </div>
 
     <div class="controls">
@@ -200,10 +200,13 @@
   <script>
     let filesData = [];
     let draggedIndex = null;
-    let finalPdfBytes = null;
 
     function toggleTheme() {
-      document.body.classList.toggle('dark');
+      const body = document.body;
+      body.classList.toggle('dark');
+      const switchText = document.getElementById('themeToggle');
+      const isDark = body.classList.contains('dark');
+      switchText.textContent = isDark ? "☀️ Activer le mode clair" : "🌙 Activer le mode sombre";
     }
 
     function handleFiles(fileList) {
@@ -298,8 +301,8 @@
         }
       }
 
-      finalPdfBytes = await pdfDoc.save();
-      const blob = new Blob([finalPdfBytes], { type: "application/pdf" });
+      const pdfBytes = await pdfDoc.save();
+      const blob = new Blob([pdfBytes], { type: "application/pdf" });
 
       if (isPreview) {
         const url = URL.createObjectURL(blob);
