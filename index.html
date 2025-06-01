@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/337/337946.png" type="image/png">
   <meta charset="UTF-8" />
   <title>FusionX</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -28,28 +29,33 @@
     }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--primary);
-      margin: 0;
-      padding: 30px;
-      display: flex;
-      justify-content: center;
-    }
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--primary);
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
 
     .app {
-      background: var(--card);
-      padding: 30px;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 600px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-    }
+  background: var(--card);
+  padding: 20px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  box-sizing: border-box;
+}
 
     h1 {
-      text-align: center;
-      margin-bottom: 10px;
-    }
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 1.5em;
+  word-break: break-word;
+}
 
     .controls {
       display: flex;
@@ -119,11 +125,12 @@
       flex-grow: 1;
     }
 
-    .item button {
+    .item button.rotate-btn {
       background: none;
       border: none;
       cursor: pointer;
-      font-size: 1em;
+      font-size: 1.2em;
+      margin-left: 5px;
     }
 
     .options {
@@ -139,24 +146,28 @@
     }
 
     iframe {
-      width: 100%;
-      height: 400px;
-      border: 1px solid #ccc;
-      margin-top: 15px;
-      border-radius: 8px;
-      background: white;
-    }
+  width: 100%;
+  height: 400px;
+  border: 1px solid #ccc;
+  margin-top: 15px;
+  border-radius: 8px;
+  background: white;
+  max-width: 100%;
+  box-sizing: border-box;
+}
 
     button.action {
-      background: var(--success);
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      margin: 10px 5px 0;
-    }
+  background: var(--success);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 10px 5px 0;
+  width: 100%;
+  max-width: 250px;
+}
 
     .footer {
       font-size: 0.8em;
@@ -169,34 +180,26 @@
 <body>
   <div class="app">
     <h1>📎 FusionX</h1>
-
     <div class="options">
       <label><input type="checkbox" id="fitA4" /> Adapter les images à A4</label>
       <span class="switch" id="themeToggle" onclick="toggleTheme()">🌙 Activer le mode sombre</span>
     </div>
-
     <div class="controls">
       <input type="text" id="filename" placeholder="Nom du fichier (ex: fusion.pdf)" />
       <button onclick="clearAll()">🗑️ Tout effacer</button>
     </div>
-
     <div class="upload-area" id="dropzone" onclick="document.getElementById('upload').click();">
       Glisser-déposer ou cliquer pour sélectionner vos fichiers
       <input type="file" id="upload" multiple accept=".pdf,image/*" style="display: none" onchange="handleFiles(this.files)" />
     </div>
-
     <div class="preview" id="previewList"></div>
-
     <div style="text-align: center;">
-      <button class="action" onclick="generatePDF(true)">📖 Prévisualiser</button>
+      <button class="action" onclick="generatePDF(true)">🔎 Visualiser</button>
       <button class="action" onclick="generatePDF(false)">📄 Générer le PDF</button>
     </div>
-
     <iframe id="previewFrame" style="display:none;"></iframe>
-
     <div class="footer">Développé avec ❤️ par Jeff Longele</div>
   </div>
-
   <script>
     let filesData = [];
     let draggedIndex = null;
@@ -211,7 +214,7 @@
 
     function handleFiles(fileList) {
       for (const file of fileList) {
-        filesData.push(file);
+        filesData.push({ file, rotation: null });
       }
       renderList();
     }
@@ -219,21 +222,20 @@
     function renderList() {
       const list = document.getElementById("previewList");
       list.innerHTML = "";
-
-      filesData.forEach((file, index) => {
+      filesData.forEach((entry, index) => {
+        const file = entry.file;
         const div = document.createElement("div");
         div.className = "item";
         div.draggable = true;
         div.dataset.index = index;
-
         div.addEventListener("dragstart", () => draggedIndex = index);
         div.addEventListener("dragover", e => e.preventDefault());
         div.addEventListener("drop", () => {
           const item = filesData.splice(draggedIndex, 1)[0];
           filesData.splice(index, 0, item);
           renderList();
+          regeneratePreviewIfVisible();
         });
-
         const thumb = document.createElement("div");
         thumb.className = "thumb";
         if (file.type.startsWith("image/")) {
@@ -243,19 +245,27 @@
         } else {
           thumb.textContent = "📄";
         }
-
         const name = document.createElement("div");
         name.className = "filename";
         name.textContent = file.name;
-
+        const rotateBtn = document.createElement("button");
+        rotateBtn.className = "rotate-btn";
+        rotateBtn.innerHTML = "🔄";
+        rotateBtn.onclick = () => {
+          entry.rotation = (entry.rotation + 90) % 360;
+          renderList();
+          regeneratePreviewIfVisible();
+        };
         const del = document.createElement("button");
         del.textContent = "❌";
         del.onclick = () => {
           filesData.splice(index, 1);
           renderList();
+          regeneratePreviewIfVisible();
         };
-
-        div.append(thumb, name, del);
+        div.append(thumb, name);
+if (!file.type.startsWith("image/")) div.append(rotateBtn);
+div.append(del);
         list.appendChild(div);
       });
     }
@@ -266,44 +276,56 @@
       document.getElementById('previewFrame').style.display = 'none';
     }
 
+    function regeneratePreviewIfVisible() {
+      const frame = document.getElementById("previewFrame");
+      if (frame.style.display !== 'none') {
+        generatePDF(true);
+      }
+    }
+
     async function generatePDF(isPreview) {
       if (filesData.length === 0) return alert("Ajoutez des fichiers");
-
       const fitToA4 = document.getElementById('fitA4').checked;
-      const { PDFDocument } = PDFLib;
+      const { PDFDocument, degrees } = PDFLib;
       const pdfDoc = await PDFDocument.create();
-
-      for (const file of filesData) {
+      for (const entry of filesData) {
+        const file = entry.file;
         const buffer = await file.arrayBuffer();
-
         if (file.type === "application/pdf") {
           const pdf = await PDFDocument.load(buffer);
           const pages = await pdfDoc.copyPages(pdf, pdf.getPageIndices());
-          pages.forEach(p => pdfDoc.addPage(p));
+          pages.forEach(p => {
+            if (entry.rotation !== null && entry.rotation % 360 !== 0) p.setRotation(degrees(entry.rotation));
+            pdfDoc.addPage(p);
+          });
         } else if (file.type.startsWith("image/")) {
           const embed = file.type.includes("png")
             ? await pdfDoc.embedPng(buffer)
             : await pdfDoc.embedJpg(buffer);
-
           const dims = fitToA4 ? [595.28, 841.89] : [embed.width, embed.height];
-          const page = pdfDoc.addPage(dims);
-
-          const scale = fitToA4
-            ? Math.min(595.28 / embed.width, 841.89 / embed.height)
-            : 1;
-
-          page.drawImage(embed, {
-            x: (dims[0] - embed.width * scale) / 2,
-            y: (dims[1] - embed.height * scale) / 2,
-            width: embed.width * scale,
-            height: embed.height * scale
-          });
+          let actualDims = [...dims];
+const page = pdfDoc.addPage(actualDims);
+const imgWidth = entry.rotation !== null && entry.rotation % 180 !== 0 ? embed.height : embed.width;
+const imgHeight = entry.rotation !== null && entry.rotation % 180 !== 0 ? embed.width : embed.height;
+const scale = fitToA4
+  ? Math.min(actualDims[0] / imgWidth, actualDims[1] / imgHeight)
+  : 1;
+const x = (actualDims[0] - imgWidth * scale) / 2;
+const y = (actualDims[1] - imgHeight * scale) / 2;
+const drawOptions = {
+  x,
+  y,
+  width: imgWidth * scale,
+  height: imgHeight * scale
+};
+if (entry.rotation !== null && entry.rotation % 360 !== 0) {
+  drawOptions.rotate = degrees(entry.rotation);
+}
+page.drawImage(embed, drawOptions);
         }
       }
-
       const pdfBytes = await pdfDoc.save();
       const blob = new Blob([pdfBytes], { type: "application/pdf" });
-
       if (isPreview) {
         const url = URL.createObjectURL(blob);
         const frame = document.getElementById("previewFrame");
@@ -324,11 +346,7 @@
       e.preventDefault();
       dropzone.classList.add("dragover");
     });
-
-    dropzone.addEventListener("dragleave", () => {
-      dropzone.classList.remove("dragover");
-    });
-
+    dropzone.addEventListener("dragleave", () => dropzone.classList.remove("dragover"));
     dropzone.addEventListener("drop", e => {
       e.preventDefault();
       dropzone.classList.remove("dragover");
