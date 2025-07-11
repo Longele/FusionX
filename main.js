@@ -57,6 +57,7 @@ function renderList() {
     if (entry.file.type.startsWith("image/")) {
       const img = document.createElement("img");
       img.src = URL.createObjectURL(entry.file);
+      img.onload = () => URL.revokeObjectURL(img.src);
       thumb.appendChild(img);
     } else thumb.textContent = "📄";
 
@@ -134,11 +135,14 @@ async function generatePDF(isPreview) {
     const frame = document.getElementById("previewFrame");
     frame.style.display = "block";
     frame.src = url;
+    frame.onload = () => URL.revokeObjectURL(url);
   } else {
     const name = document.getElementById("filename").value.trim() || "FusionX.pdf";
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
+    const downloadUrl = URL.createObjectURL(blob);
+    a.href = downloadUrl;
     a.download = name.endsWith(".pdf") ? name : name + ".pdf";
     a.click();
+    URL.revokeObjectURL(downloadUrl);
   }
 }
