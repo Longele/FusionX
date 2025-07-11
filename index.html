@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'">
   <title>FusionX</title>
   <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/337/337946.png" type="image/png">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/pdf-lib"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -32,6 +32,7 @@
     <iframe id="previewFrame" style="display:none;"></iframe>
     <div class="footer">Développé avec ❤️ par Jeff Longele — vos fichiers ne sont jamais enregistrés.</div>
   </div>
+  <script src="./node_modules/pdf-lib/dist/pdf-lib.min.js"></script>
   <script src="main.js"></script>
 </body>
 </html>

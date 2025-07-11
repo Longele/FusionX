@@ -6,16 +6,23 @@ function createWindow() {
     width: 1024,
     height: 768,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false
+      nodeIntegration: false,
+      contextIsolation: true,
+      webSecurity: true,
+      allowRunningInsecureContent: false
     },
     icon: path.join(__dirname, 'icons/icon.png')
   });
 
+  // Enable file drag and drop
+  win.webContents.on('will-navigate', (event) => {
+    event.preventDefault();
+  });
+
   win.loadFile('index.html');
   
-  // Uncomment the following line to open DevTools by default
-  // win.webContents.openDevTools();
+  // Uncomment the following line to open DevTools for debugging
+  win.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {
