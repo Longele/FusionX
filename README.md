@@ -20,3 +20,16 @@ FusionX is a lightweight web application for merging PDFs and images directly in
 
 All processing happens locally in your browser using [pdf-lib](https://pdf-lib.js.org/), so your files never leave your machine.
 
+## Building the Desktop App
+
+This project also includes an Electron configuration for running FusionX as a desktop application.
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Build the application:
+   ```bash
+   npm run build
+   ```
+   The Windows executable will be available in the `dist` folder.

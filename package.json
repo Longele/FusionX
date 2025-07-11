@@ -1,0 +1,29 @@
+{
+  "name": "fusionx",
+  "version": "1.0.0",
+  "description": "FusionX is a lightweight web application for merging PDFs and images directly in your browser. Simply drag and drop your files, reorder or rotate them, and generate a single PDF in seconds.",
+  "main": "electron/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^37.2.1",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.fusionx.app",
+    "productName": "FusionX",
+    "files": [
+      "**/*"
+    ],
+    "win": {
+      "target": "portable"
+    }
+  }
+}
