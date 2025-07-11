@@ -22,6 +22,25 @@ All processing happens locally in your browser using [pdf-lib](https://pdf-lib.j
 
 ## Packaging
 
+### Electron desktop build
+
+Install Node.js then run:
+```bash
+npm install
+```
+
+To launch in development mode:
+```bash
+npm start
+```
+
+To create a Windows installer:
+```bash
+npm run dist
+```
+The installer will be written to the `dist/` directory.
+
+
 Run the provided script to create a distributable zip archive:
 
 ```bash
