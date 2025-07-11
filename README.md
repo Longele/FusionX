@@ -15,7 +15,7 @@ FusionX is a lightweight web application for merging PDFs and images directly in
 ## Getting Started
 
 1. Clone or download this repository.
-2. Open `index.html` in any modern browser.
+2. Open `index.html` in any modern browser – no build step required.
 3. Drag your files into the drop area, arrange them, then preview or download the final PDF.
 
 All processing happens locally in your browser using [pdf-lib](https://pdf-lib.js.org/), so your files never leave your machine.
