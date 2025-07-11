@@ -143,6 +143,11 @@ h1 img { width: 28px; height: 28px; }
   transform: scale(1.05);
   box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
 }
+.download {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
 input[type="text"]:focus {
   border-color: var(--highlight);
   box-shadow: 0 0 5px var(--highlight);
