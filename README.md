@@ -28,3 +28,7 @@ Run the provided script to create a distributable zip archive:
 ./package.sh
 ```
 
+## License
+
+This project is released under the [ISC License](LICENSE).
+
