@@ -27,54 +27,9 @@ const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("upload");
 const previewList = document.getElementById("previewList");
 const themeToggle = document.getElementById("themeToggle");
-const languageSelect = document.getElementById("languageSelect");
-const progressContainer = document.getElementById("progressContainer");
-const progressBar = document.getElementById("progressBar");
 let filesData = [];
 let draggedIndex = null;
-let currentLanguage = 'fr';
 
-// Language handling
-function detectLanguage() {
-  const browserLang = navigator.language.split('-')[0];
-  return translations.hasOwnProperty(browserLang) ? browserLang : 'en';
-}
-
-function updateLanguage(lang) {
-  currentLanguage = lang;
-  document.querySelectorAll('[data-translate]').forEach(element => {
-    const key = element.getAttribute('data-translate');
-    if (element.tagName === 'INPUT' && element.type === 'text') {
-      element.placeholder = translations[lang][key];
-    } else {
-      element.textContent = translations[lang][key];
-    }
-  });
-  updateThemeButton();
-}
-
-languageSelect.value = detectLanguage();
-updateLanguage(languageSelect.value);
-
-languageSelect.addEventListener('change', (e) => {
-  updateLanguage(e.target.value);
-});
-
-// Progress bar handling
-function showProgress() {
-  progressContainer.style.display = 'flex';
-  progressBar.style.width = '0%';
-}
-
-function updateProgress(percent) {
-  progressBar.style.width = `${percent}%`;
-}
-
-function hideProgress() {
-  progressContainer.style.display = 'none';
-}
-
-// Theme handling
 document.addEventListener("DOMContentLoaded", () => updateThemeButton());
 
 function toggleTheme() {
@@ -84,26 +39,21 @@ function toggleTheme() {
 
 function updateThemeButton() {
   const isDark = document.body.classList.contains("dark");
-  const key = isDark ? "lightMode" : "darkMode";
-  themeToggle.textContent = translations[currentLanguage][key];
+  themeToggle.textContent = isDark ? "☀️ Mode clair" : "🌙 Mode sombre";
 }
 
-// File handling
 dropzone.addEventListener("dragover", (e) => {
   e.preventDefault();
   dropzone.classList.add("dragover");
 });
-
 dropzone.addEventListener("dragleave", () => {
   dropzone.classList.remove("dragover");
 });
-
 dropzone.addEventListener("drop", (e) => {
   e.preventDefault();
   dropzone.classList.remove("dragover");
   handleFiles(e.dataTransfer.files);
 });
-
 fileInput.addEventListener("change", (e) => handleFiles(e.target.files));
 
 function handleFiles(fileList) {
@@ -111,22 +61,73 @@ function handleFiles(fileList) {
   renderList();
 }
 
-// Rest of your existing functions...
-// ...existing code for renderList()...
+function renderList() {
+  previewList.innerHTML = "";
+  filesData.forEach((entry, index) => {
+    const div = document.createElement("div");
+    div.className = "item";
+    div.setAttribute("draggable", true);
+    div.dataset.index = index;
+    div.addEventListener("dragstart", () => draggedIndex = index);
+    div.addEventListener("dragover", e => e.preventDefault());
+    div.addEventListener("drop", () => {
+      const item = filesData.splice(draggedIndex, 1)[0];
+      filesData.splice(index, 0, item);
+      renderList();
+      generatePDF(true);
+    });
+
+    const thumb = document.createElement("div");
+    thumb.className = "thumb";
+    if (entry.file.type.startsWith("image/")) {
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(entry.file);
+      thumb.appendChild(img);
+      // Clean up the URL object when the image loads
+      img.onload = () => URL.revokeObjectURL(img.src);
+    } else thumb.textContent = "📄";
+
+    const name = document.createElement("input");
+    name.className = "filename";
+    name.value = entry.file.name;
+    name.addEventListener("change", () => entry.file.name = name.value);
+
+    const rotateBtn = document.createElement("button");
+    rotateBtn.className = "rotate-btn";
+    rotateBtn.innerHTML = `🔄 <span class="angle">${entry.rotation}°</span>`;
+    rotateBtn.onclick = () => {
+      entry.rotation = (entry.rotation + 90) % 360;
+      renderList();
+      generatePDF(true);
+    };
+
+    const delBtn = document.createElement("button");
+    delBtn.className = "delete-btn";
+    delBtn.textContent = "❌";
+    delBtn.onclick = () => {
+      filesData.splice(index, 1);
+      renderList();
+      document.getElementById("previewFrame").style.display = "none";
+    };
+
+    div.append(thumb, name, rotateBtn, delBtn);
+    previewList.appendChild(div);
+  });
+}
+
+function clearAll() {
+  filesData = [];
+  renderList();
+  document.getElementById("previewFrame").style.display = "none";
+}
 
 async function generatePDF(isPreview) {
-  if (filesData.length === 0) return alert(translations[currentLanguage].addFiles);
-  
-  showProgress();
+  if (filesData.length === 0) return alert("Ajoutez des fichiers");
   const { PDFDocument, degrees } = PDFLib;
   const pdfDoc = await PDFDocument.create();
   const fitToA4 = document.getElementById("fitA4").checked;
 
-  for (let i = 0; i < filesData.length; i++) {
-    const entry = filesData[i];
-    const progress = (i / filesData.length) * 100;
-    updateProgress(progress);
-
+  for (const entry of filesData) {
     const file = entry.file;
     const buffer = await file.arrayBuffer();
     if (file.type === "application/pdf") {
@@ -153,10 +154,8 @@ async function generatePDF(isPreview) {
     }
   }
 
-  updateProgress(100);
   const pdfBytes = await pdfDoc.save();
   const blob = new Blob([pdfBytes], { type: "application/pdf" });
-  
   if (isPreview) {
     const url = URL.createObjectURL(blob);
     const frame = document.getElementById("previewFrame");
@@ -173,6 +172,4 @@ async function generatePDF(isPreview) {
     // Clean up the URL object after a short delay
     setTimeout(() => URL.revokeObjectURL(a.href), 100);
   }
-  
-  hideProgress();
 }
