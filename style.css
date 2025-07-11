@@ -177,3 +177,22 @@ iframe {
   color: #888;
   text-align: center;
 }
+.download-desktop {
+  margin-top: 10px;
+}
+
+.download-desktop a {
+  display: inline-block;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: white;
+  text-decoration: none;
+  border-radius: 20px;
+  font-size: 0.9em;
+  transition: all 0.3s ease;
+}
+
+.download-desktop a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+}

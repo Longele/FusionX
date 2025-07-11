@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://unpkg.com 'unsafe-inline'" />
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';">
   <title>FusionX</title>
   <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/337/337946.png" type="image/png">
   <link rel="stylesheet" href="fonts/inter.css">
-  <script src="https://unpkg.com/pdf-lib" integrity="sha384-weMABwrltA6jWR8DDe9Jp5blk+tZQh7ugpCsF3JwSA53WZM9/14PjS5LAJNHNjAI" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -31,8 +30,14 @@
       <button class="btn" onclick="generatePDF(false)">📄 Générer le PDF</button>
     </div>
     <iframe id="previewFrame" style="display:none;"></iframe>
-    <div class="footer">Développé avec ❤️ par Jeff Longele — vos fichiers ne sont jamais enregistrés.</div>
+    <div class="footer">
+      Développé avec ❤️ par Jeff Longele — vos fichiers ne sont jamais enregistrés.
+      <div class="download-desktop">
+        <a href="download.html" target="_blank">💻 Télécharger la version desktop</a>
+      </div>
+    </div>
   </div>
-  <script src="renderer.js"></script>
+  <script src="pdf-lib.min.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>
