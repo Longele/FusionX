@@ -20,3 +20,11 @@ FusionX is a lightweight web application for merging PDFs and images directly in
 
 All processing happens locally in your browser using [pdf-lib](https://pdf-lib.js.org/), so your files never leave your machine.
 
+## Packaging
+
+Run the provided script to create a distributable zip archive:
+
+```bash
+./package.sh
+```
+
