@@ -2,7 +2,7 @@
   "name": "fusionx",
   "version": "1.0.0",
   "description": "FusionX desktop build",
-  "main": "main.js",
+  "main": "electron.js",
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",
