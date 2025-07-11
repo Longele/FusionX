@@ -196,3 +196,60 @@ iframe {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
 }
+.progress-container {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.progress-box {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  width: 300px;
+}
+
+.progress-bar {
+  height: 4px;
+  background: #f0f0f0;
+  border-radius: 2px;
+  margin: 10px 0;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2ecc71, #27ae60);
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.language-selector {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.language-selector select {
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid var(--light-gray);
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.language-selector select:hover {
+  border-color: var(--highlight);
+}

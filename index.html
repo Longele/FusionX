@@ -6,38 +6,52 @@
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';">
   <title>FusionX</title>
   <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/337/337946.png" type="image/png">
-  <link rel="stylesheet" href="fonts/inter.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/pdf-lib"></script>
 </head>
 <body>
+  <div class="language-selector">
+    <select id="languageSelect">
+      <option value="fr">Français</option>
+      <option value="en">English</option>
+    </select>
+  </div>
+
+  <div class="progress-container" id="progressContainer">
+    <div class="progress-box">
+      <div id="progressText" data-translate="generating">Génération du PDF...</div>
+      <div class="progress-bar">
+        <div class="progress-bar-fill" id="progressBar"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="container">
-    <h1><img src="https://cdn-icons-png.flaticon.com/512/337/337946.png" alt="icon">FusionX</h1>
+    <h1><img src="https://cdn-icons-png.flaticon.com/512/337/337946.png" alt="icon"><span data-translate="title">FusionX</span></h1>
     <div class="options">
-      <label><input type="checkbox" id="fitA4"> A4 auto</label>
-      <button id="themeToggle" onclick="toggleTheme()">🌙 Mode sombre</button>
+      <label><input type="checkbox" id="fitA4"> <span data-translate="autoA4">A4 auto</span></label>
+      <button id="themeToggle" onclick="toggleTheme()" data-translate="darkMode">🌙 Mode sombre</button>
     </div>
     <div class="controls">
-      <input type="text" id="filename" placeholder="Nom du fichier (ex: fusion.pdf)" style="flex:1;padding:8px;border-radius:6px;border:1px solid #ccc;">
-      <button class="btn" onclick="clearAll()">🗑️ Tout effacer</button>
+      <input type="text" id="filename" data-translate="fileName" placeholder="Nom du fichier (ex: fusion.pdf)" style="flex:1;padding:8px;border-radius:6px;border:1px solid #ccc;">
+      <button class="btn" onclick="clearAll()" data-translate="clearAll">🗑️ Tout effacer</button>
     </div>
     <div class="upload" id="dropzone" onclick="document.getElementById('upload').click()">
-      Glisser-déposer ou cliquer pour sélectionner vos fichiers
+      <span data-translate="dropzoneText">Glisser-déposer ou cliquer pour sélectionner vos fichiers</span>
       <input type="file" id="upload" multiple accept=".pdf,image/*" style="display: none">
     </div>
     <div class="preview" id="previewList"></div>
     <div class="btn-group">
-      <button class="btn" onclick="generatePDF(true)">🔎 Visualiser</button>
-      <button class="btn" onclick="generatePDF(false)">📄 Générer le PDF</button>
+      <button class="btn" onclick="generatePDF(true)" data-translate="preview">🔎 Visualiser</button>
+      <button class="btn" onclick="generatePDF(false)" data-translate="generate">📄 Générer le PDF</button>
     </div>
     <iframe id="previewFrame" style="display:none;"></iframe>
     <div class="footer">
-      Développé avec ❤️ par Jeff Longele — vos fichiers ne sont jamais enregistrés.
-      <div class="download-desktop">
-        <a href="https://github.com/YOUR_USERNAME/FusionX/releases/latest" target="_blank">💻 Télécharger la version desktop</a>
-      </div>
+      <span data-translate="footer">Développé avec ❤️ par Jeff Longele — vos fichiers ne sont jamais enregistrés.</span>
     </div>
   </div>
-  <script src="pdf-lib.min.js"></script>
+  <script src="translations.js"></script>
   <script src="main.js"></script>
 </body>
 </html>
