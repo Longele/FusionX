@@ -13,21 +13,27 @@
   <div class="container">
     <h1><img src="https://cdn-icons-png.flaticon.com/512/337/337946.png" alt="icon">FusionX</h1>
     <div class="options">
-      <label><input type="checkbox" id="fitA4"> A4 auto</label>
-      <button id="themeToggle" onclick="toggleTheme()">🌙 Mode sombre</button>
+      <label><input type="checkbox" id="fitA4" data-i18n="fitA4"> A4 auto</label>
+      <div class="right-controls">
+        <button id="themeToggle" onclick="toggleTheme()" data-i18n="modeToggle">🌙 Mode sombre</button>
+        <div class="lang-switch">
+          <button id="langFr" class="lang-btn" aria-label="Français">FR</button>
+          <button id="langEn" class="lang-btn" aria-label="English">EN</button>
+        </div>
+      </div>
     </div>
     <div class="controls">
-      <input type="text" id="filename" placeholder="Nom du fichier (ex: fusion.pdf)" style="flex:1;padding:8px;border-radius:6px;border:1px solid #ccc;">
+      <input type="text" id="filename" data-i18n-placeholder="filenamePlaceholder" placeholder="Nom du fichier (ex: fusion.pdf)" style="flex:1;padding:8px;border-radius:6px;border:1px solid #ccc;">
       <button class="btn" onclick="clearAll()">🗑️ Tout effacer</button>
     </div>
-  <div class="upload" id="dropzone" tabindex="0" role="button" aria-label="Zone de dépôt de fichiers. Appuyez sur Entrée ou Espace pour ouvrir le sélecteur de fichiers">
+  <div class="upload" id="dropzone" tabindex="0" role="button" data-i18n="dropzoneText" aria-label="Zone de dépôt de fichiers. Appuyez sur Entrée ou Espace pour ouvrir le sélecteur de fichiers">
       Glisser-déposer ou cliquer pour sélectionner vos fichiers
       <input type="file" id="upload" multiple accept=".pdf,image/*" style="display: none">
     </div>
     <div class="preview" id="previewList"></div>
     <div class="btn-group">
-      <button class="btn" onclick="generatePDF(true)">🔎 Visualiser</button>
-      <button class="btn" onclick="generatePDF(false)">📄 Générer le PDF</button>
+      <button class="btn" id="previewBtn" onclick="generatePDF(true)" data-i18n="previewBtn">🔎 Visualiser</button>
+      <button class="btn" id="generateBtn" onclick="generatePDF(false)" data-i18n="generateBtn">📄 Générer le PDF</button>
     </div>
   <div id="statusArea" aria-live="polite" style="margin-top:10px"></div>
   <iframe id="previewFrame" style="display:none;"></iframe>

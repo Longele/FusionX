@@ -44,6 +44,59 @@ document.addEventListener("DOMContentLoaded", () => {
   if (fileInput) fileInput.addEventListener("change", (e) => handleFiles(e.target.files));
 });
 
+// --- i18n support ---
+const translations = {
+  fr: {
+    fitA4: 'A4 auto',
+    modeToggle: '🌙 Mode sombre',
+    dropzoneText: 'Glisser-déposer ou cliquer pour sélectionner vos fichiers',
+    previewBtn: '🔎 Visualiser',
+    generateBtn: '📄 Générer le PDF',
+    filenamePlaceholder: 'Nom du fichier (ex: fusion.pdf)'
+  },
+  en: {
+    fitA4: 'Auto A4',
+    modeToggle: '🌙 Dark mode',
+    dropzoneText: 'Drag & drop or click to select files',
+    previewBtn: '🔎 Preview',
+    generateBtn: '📄 Generate PDF',
+    filenamePlaceholder: 'File name (e.g. merged.pdf)'
+  }
+};
+
+function setLanguage(lang) {
+  const active = translations[lang] ? lang : 'fr';
+  localStorage.setItem('fx_lang', active);
+  // translate elements with data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (translations[active][key]) el.textContent = translations[active][key];
+  });
+  // placeholders
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (translations[active][key]) el.placeholder = translations[active][key];
+  });
+  // update language selector value if present
+  const sel = document.getElementById('languageSelect');
+  if (sel) sel.value = active;
+}
+
+// initialize language from preference or default to fr
+document.addEventListener('DOMContentLoaded', () => {
+  const pref = localStorage.getItem('fx_lang') || 'fr';
+  setLanguage(pref);
+  const btnFr = document.getElementById('langFr');
+  const btnEn = document.getElementById('langEn');
+  function updateLangButtons(active) {
+    if (btnFr) btnFr.classList.toggle('active', active === 'fr');
+    if (btnEn) btnEn.classList.toggle('active', active === 'en');
+  }
+  updateLangButtons(pref);
+  if (btnFr) btnFr.addEventListener('click', () => { setLanguage('fr'); updateLangButtons('fr'); });
+  if (btnEn) btnEn.addEventListener('click', () => { setLanguage('en'); updateLangButtons('en'); });
+});
+
 function setSpinner(visible) {
   const spinner = document.getElementById('spinner');
   const btns = document.querySelectorAll('.btn');
