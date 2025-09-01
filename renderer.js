@@ -1,15 +1,44 @@
-const dropzone = document.getElementById("dropzone");
-const fileInput = document.getElementById("upload");
-const previewList = document.getElementById("previewList");
-const themeToggle = document.getElementById("themeToggle");
+let dropzone;
+let fileInput;
+let previewList;
+let themeToggle;
 let filesData = [];
 let draggedIndex = null;
 
-document.addEventListener("DOMContentLoaded", () => updateThemeButton());
+document.addEventListener("DOMContentLoaded", () => {
+  // cache DOM elements after load
+  dropzone = document.getElementById("dropzone");
+  fileInput = document.getElementById("upload");
+  previewList = document.getElementById("previewList");
+  themeToggle = document.getElementById("themeToggle");
+
+  updateThemeButton();
+
+  // attach listeners
+  if (dropzone) {
+    dropzone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropzone.classList.add("dragover");
+    });
+    dropzone.addEventListener("dragleave", () => {
+      dropzone.classList.remove("dragover");
+    });
+    dropzone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropzone.classList.remove("dragover");
+      handleFiles(e.dataTransfer.files);
+    });
+    // click on dropzone should forward to hidden input
+    dropzone.addEventListener("click", () => fileInput && fileInput.click());
+  }
+
+  if (fileInput) fileInput.addEventListener("change", (e) => handleFiles(e.target.files));
+});
 
 function toggleTheme() {
   document.body.classList.toggle("dark");
   updateThemeButton();
+
 }
 
 function updateThemeButton() {
@@ -17,26 +46,15 @@ function updateThemeButton() {
   themeToggle.textContent = isDark ? "☀️ Mode clair" : "🌙 Mode sombre";
 }
 
-dropzone.addEventListener("dragover", (e) => {
-  e.preventDefault();
-  dropzone.classList.add("dragover");
-});
-dropzone.addEventListener("dragleave", () => {
-  dropzone.classList.remove("dragover");
-});
-dropzone.addEventListener("drop", (e) => {
-  e.preventDefault();
-  dropzone.classList.remove("dragover");
-  handleFiles(e.dataTransfer.files);
-});
-fileInput.addEventListener("change", (e) => handleFiles(e.target.files));
 
 function handleFiles(fileList) {
+  console.log('handleFiles called with', fileList.length, 'files');
   for (const file of fileList) filesData.push({ file, rotation: 0 });
   renderList();
 }
 
 function renderList() {
+  console.log('renderList called, filesData length:', filesData.length);
   previewList.innerHTML = "";
   filesData.forEach((entry, index) => {
     const div = document.createElement("div");
@@ -93,25 +111,34 @@ function clearAll() {
   filesData = [];
   renderList();
   document.getElementById("previewFrame").style.display = "none";
+
 }
 
 async function generatePDF(isPreview) {
-  if (filesData.length === 0) return alert("Ajoutez des fichiers");
-  const { PDFDocument, degrees } = PDFLib;
-  const pdfDoc = await PDFDocument.create();
-  const fitToA4 = document.getElementById("fitA4").checked;
+  console.log('generatePDF called, isPreview=', isPreview);
+  try {
+    if (filesData.length === 0) return alert("Ajoutez des fichiers");
+    if (typeof PDFLib === 'undefined') throw new Error('PDFLib is not loaded');
+    const { PDFDocument, degrees } = PDFLib;
+    const pdfDoc = await PDFDocument.create();
+    const fitToA4 = document.getElementById("fitA4").checked;
 
   for (const entry of filesData) {
     const file = entry.file;
     const buffer = await file.arrayBuffer();
     if (file.type === "application/pdf") {
       const pdf = await PDFDocument.load(buffer);
-      const pages = await pdfDoc.copyPages(pdf, pdf.getPageIndices());
+      // compute indices safely for different pdf-lib versions
+      let indices;
+      if (typeof pdf.getPageIndices === 'function') indices = pdf.getPageIndices();
+      else if (typeof pdf.getPageCount === 'function') indices = Array.from({ length: pdf.getPageCount() }, (_, i) => i);
+      else indices = [];
+      const pages = await pdfDoc.copyPages(pdf, indices);
       pages.forEach(p => {
         if (entry.rotation % 360 !== 0) p.setRotation(degrees(entry.rotation));
         pdfDoc.addPage(p);
       });
-    } else if (file.type.startsWith("image/")) {
+    } else if (file.type && file.type.startsWith("image/")) {
       const embed = file.type.includes("png") ? await pdfDoc.embedPng(buffer) : await pdfDoc.embedJpg(buffer);
       const dims = fitToA4 ? [595.28, 841.89] : [embed.width, embed.height];
       const page = pdfDoc.addPage(dims);
@@ -145,4 +172,13 @@ async function generatePDF(isPreview) {
     a.click();
     setTimeout(() => URL.revokeObjectURL(downloadUrl), 100);
   }
+  } catch (err) {
+    console.error('generatePDF error', err);
+    alert('Erreur lors de la génération du PDF: ' + (err && err.message ? err.message : err));
+  }
 }
+
+window.toggleTheme = toggleTheme;
+window.clearAll = clearAll;
+window.generatePDF = generatePDF;
+
