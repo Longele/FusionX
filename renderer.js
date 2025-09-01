@@ -49,7 +49,7 @@ function updateThemeButton() {
 
 function handleFiles(fileList) {
   console.log('handleFiles called with', fileList.length, 'files');
-  for (const file of fileList) filesData.push({ file, rotation: 0 });
+  for (const file of fileList) filesData.push({ file, rotation: 0, displayName: file.name });
   renderList();
 }
 
@@ -79,10 +79,10 @@ function renderList() {
       thumb.appendChild(img);
     } else thumb.textContent = "📄";
 
-    const name = document.createElement("input");
-    name.className = "filename";
-    name.value = entry.file.name;
-    name.addEventListener("change", () => entry.file.name = name.value);
+  const name = document.createElement("input");
+  name.className = "filename";
+  name.value = entry.displayName || entry.file.name;
+  name.addEventListener("change", () => entry.displayName = name.value);
 
     const rotateBtn = document.createElement("button");
     rotateBtn.className = "rotate-btn";
