@@ -30,6 +30,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     // click on dropzone should forward to hidden input
     dropzone.addEventListener("click", () => fileInput && fileInput.click());
+    // keyboard support: Enter or Space opens the file picker
+    dropzone.addEventListener("keydown", (e) => {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        fileInput && fileInput.click();
+      }
+    });
   }
 
   if (fileInput) fileInput.addEventListener("change", (e) => handleFiles(e.target.files));
@@ -48,9 +55,17 @@ function updateThemeButton() {
 
 
 function handleFiles(fileList) {
-  console.log('handleFiles called with', fileList.length, 'files');
-  for (const file of fileList) filesData.push({ file, rotation: 0, displayName: file.name });
+  // normalize possible DataTransfer or FileList
+  const list = fileList && fileList.files ? fileList.files : fileList;
+  if (!list || list.length === 0) {
+    console.log('handleFiles: no files to handle');
+    return;
+  }
+  console.log('handleFiles called with', list.length, 'files');
+  for (const file of list) filesData.push({ file, rotation: 0, displayName: file.name });
   renderList();
+  // reset hidden input so selecting the same file again triggers change
+  if (fileInput) try { fileInput.value = ''; } catch (e) { /* ignore */ }
 }
 
 function renderList() {

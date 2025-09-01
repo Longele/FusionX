@@ -20,7 +20,7 @@
       <input type="text" id="filename" placeholder="Nom du fichier (ex: fusion.pdf)" style="flex:1;padding:8px;border-radius:6px;border:1px solid #ccc;">
       <button class="btn" onclick="clearAll()">🗑️ Tout effacer</button>
     </div>
-    <div class="upload" id="dropzone" onclick="document.getElementById('upload').click()">
+  <div class="upload" id="dropzone" tabindex="0" role="button" aria-label="Zone de dépôt de fichiers. Appuyez sur Entrée ou Espace pour ouvrir le sélecteur de fichiers">
       Glisser-déposer ou cliquer pour sélectionner vos fichiers
       <input type="file" id="upload" multiple accept=".pdf,image/*" style="display: none">
     </div>
