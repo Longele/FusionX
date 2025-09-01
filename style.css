@@ -72,6 +72,35 @@ h1 img { width: 28px; height: 28px; }
   flex-direction: column;
   gap: 10px;
 }
+
+.upload.dragover {
+  border-color: var(--highlight);
+  box-shadow: 0 6px 18px rgba(52,152,219,0.12);
+  transform: translateY(-2px);
+}
+
+.badge {
+  background: var(--highlight);
+  color: white;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  margin-left: 8px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+#spinner {
+  margin-top: 8px;
+  color: var(--text);
+}
+
+#iframe.preview-iframe {
+  transition: opacity 0.2s ease;
+}
 .item {
   display: flex;
   align-items: center;

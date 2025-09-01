@@ -4,6 +4,8 @@ let previewList;
 let themeToggle;
 let filesData = [];
 let draggedIndex = null;
+let previewTimeout = null;
+const DEBOUNCE_MS = 300;
 
 document.addEventListener("DOMContentLoaded", () => {
   // cache DOM elements after load
@@ -41,6 +43,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (fileInput) fileInput.addEventListener("change", (e) => handleFiles(e.target.files));
 });
+
+function setSpinner(visible) {
+  const spinner = document.getElementById('spinner');
+  const btns = document.querySelectorAll('.btn');
+  if (spinner) spinner.style.display = visible ? 'block' : 'none';
+  btns.forEach(b => b.disabled = visible);
+  const status = document.getElementById('statusArea');
+  if (status) status.textContent = visible ? 'Génération en cours…' : '';
+}
 
 function toggleTheme() {
   document.body.classList.toggle("dark");
@@ -82,7 +93,9 @@ function renderList() {
       const item = filesData.splice(draggedIndex, 1)[0];
       filesData.splice(index, 0, item);
       renderList();
-      generatePDF(true);
+      // debounce preview generation
+      clearTimeout(previewTimeout);
+      previewTimeout = setTimeout(() => generatePDF(true), DEBOUNCE_MS);
     });
 
     const thumb = document.createElement("div");
@@ -105,7 +118,8 @@ function renderList() {
     rotateBtn.onclick = () => {
       entry.rotation = (entry.rotation + 90) % 360;
       renderList();
-      generatePDF(true);
+      clearTimeout(previewTimeout);
+      previewTimeout = setTimeout(() => generatePDF(true), DEBOUNCE_MS);
     };
 
     const delBtn = document.createElement("button");
@@ -134,6 +148,7 @@ async function generatePDF(isPreview) {
   try {
     if (filesData.length === 0) return alert("Ajoutez des fichiers");
     if (typeof PDFLib === 'undefined') throw new Error('PDFLib is not loaded');
+  setSpinner(true);
     const { PDFDocument, degrees } = PDFLib;
     const pdfDoc = await PDFDocument.create();
     const fitToA4 = document.getElementById("fitA4").checked;
@@ -187,9 +202,11 @@ async function generatePDF(isPreview) {
     a.click();
     setTimeout(() => URL.revokeObjectURL(downloadUrl), 100);
   }
+    setSpinner(false);
   } catch (err) {
     console.error('generatePDF error', err);
     alert('Erreur lors de la génération du PDF: ' + (err && err.message ? err.message : err));
+    setSpinner(false);
   }
 }
 
