@@ -70,6 +70,12 @@ const translations = {
   }
 };
 
+// add toast translation fallbacks
+translations.fr.addFiles = 'Ajoutez des fichiers';
+translations.fr.genError = 'Erreur lors de la génération du PDF:';
+translations.en.addFiles = 'Please add files';
+translations.en.genError = 'Error generating PDF:';
+
 function setLanguage(lang) {
   const active = translations[lang] ? lang : 'fr';
   localStorage.setItem('fx_lang', active);
@@ -113,6 +119,33 @@ function setSpinner(visible) {
   const lang = localStorage.getItem('fx_lang') || 'fr';
   const text = visible ? (translations[lang] && translations[lang].spinnerText ? translations[lang].spinnerText : 'Generating...') : '';
   if (status) status.textContent = text;
+}
+
+// --- Toast / notifications ---
+function showToast(message, type = 'info', timeout = 4500) {
+  try {
+    const container = document.getElementById('toastContainer');
+    if (!container) return console.warn('Toast container not found');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    const msg = document.createElement('div');
+    msg.className = 'msg';
+    msg.textContent = message;
+    const close = document.createElement('button');
+    close.className = 'close';
+    close.setAttribute('aria-label', 'Close notification');
+    close.innerHTML = '✕';
+    close.onclick = () => { container.removeChild(toast); };
+    toast.append(msg, close);
+    container.appendChild(toast);
+    if (timeout > 0) setTimeout(() => { if (container.contains(toast)) container.removeChild(toast); }, timeout);
+  } catch (e) { console.error('showToast error', e); }
+}
+
+// helper to get localized text
+function t(key, fallback) {
+  const lang = localStorage.getItem('fx_lang') || 'fr';
+  return (translations[lang] && translations[lang][key]) ? translations[lang][key] : (fallback || key);
 }
 
 function toggleTheme() {
@@ -208,7 +241,7 @@ function clearAll() {
 async function generatePDF(isPreview) {
   console.log('generatePDF called, isPreview=', isPreview);
   try {
-    if (filesData.length === 0) return alert("Ajoutez des fichiers");
+    if (filesData.length === 0) { showToast(t('addFiles', 'Ajoutez des fichiers'), 'info'); return; }
     if (typeof PDFLib === 'undefined') throw new Error('PDFLib is not loaded');
   setSpinner(true);
     const { PDFDocument, degrees } = PDFLib;
@@ -267,7 +300,7 @@ async function generatePDF(isPreview) {
     setSpinner(false);
   } catch (err) {
     console.error('generatePDF error', err);
-    alert('Erreur lors de la génération du PDF: ' + (err && err.message ? err.message : err));
+    showToast(t('genError', 'Erreur lors de la génération du PDF:') + ' ' + (err && err.message ? err.message : err), 'error', 8000);
     setSpinner(false);
   }
 }
@@ -275,4 +308,5 @@ async function generatePDF(isPreview) {
 window.toggleTheme = toggleTheme;
 window.clearAll = clearAll;
 window.generatePDF = generatePDF;
+window.showToast = showToast;
 
