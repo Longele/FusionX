@@ -54,7 +54,8 @@ const translations = {
   generateBtn: '📄 Générer le PDF',
   filenamePlaceholder: 'Nom du fichier (ex: fusion.pdf)',
   clearAllBtn: '🗑️ Tout effacer',
-  spinnerText: 'Génération en cours…'
+  spinnerText: 'Génération en cours…',
+  footerText: 'Développé avec ❤️ par Jeff Longele — vos fichiers ne sont jamais enregistrés.'
   },
   en: {
     fitA4: 'Auto A4',
@@ -64,7 +65,8 @@ const translations = {
   generateBtn: '📄 Generate PDF',
   filenamePlaceholder: 'File name (e.g. merged.pdf)',
   clearAllBtn: '🗑️ Clear all',
-  spinnerText: 'Generating...'
+  spinnerText: 'Generating...',
+  footerText: 'Developed with ❤️ by Jeff Longele — your files are never saved.'
   }
 };
 
