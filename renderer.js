@@ -51,16 +51,20 @@ const translations = {
     modeToggle: '🌙 Mode sombre',
     dropzoneText: 'Glisser-déposer ou cliquer pour sélectionner vos fichiers',
     previewBtn: '🔎 Visualiser',
-    generateBtn: '📄 Générer le PDF',
-    filenamePlaceholder: 'Nom du fichier (ex: fusion.pdf)'
+  generateBtn: '📄 Générer le PDF',
+  filenamePlaceholder: 'Nom du fichier (ex: fusion.pdf)',
+  clearAllBtn: '🗑️ Tout effacer',
+  spinnerText: 'Génération en cours…'
   },
   en: {
     fitA4: 'Auto A4',
     modeToggle: '🌙 Dark mode',
     dropzoneText: 'Drag & drop or click to select files',
     previewBtn: '🔎 Preview',
-    generateBtn: '📄 Generate PDF',
-    filenamePlaceholder: 'File name (e.g. merged.pdf)'
+  generateBtn: '📄 Generate PDF',
+  filenamePlaceholder: 'File name (e.g. merged.pdf)',
+  clearAllBtn: '🗑️ Clear all',
+  spinnerText: 'Generating...'
   }
 };
 
@@ -103,7 +107,10 @@ function setSpinner(visible) {
   if (spinner) spinner.style.display = visible ? 'block' : 'none';
   btns.forEach(b => b.disabled = visible);
   const status = document.getElementById('statusArea');
-  if (status) status.textContent = visible ? 'Génération en cours…' : '';
+  // localized spinner text
+  const lang = localStorage.getItem('fx_lang') || 'fr';
+  const text = visible ? (translations[lang] && translations[lang].spinnerText ? translations[lang].spinnerText : 'Generating...') : '';
+  if (status) status.textContent = text;
 }
 
 function toggleTheme() {
