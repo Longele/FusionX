@@ -98,6 +98,8 @@ function setLanguage(lang) {
 document.addEventListener('DOMContentLoaded', () => {
   const pref = localStorage.getItem('fx_lang') || 'fr';
   setLanguage(pref);
+  // reveal body now that language has been applied to avoid flash
+  try { document.body.style.visibility = 'visible'; } catch (e) { /* ignore */ }
   const btnFr = document.getElementById('langFr');
   const btnEn = document.getElementById('langEn');
   function updateLangButtons(active) {

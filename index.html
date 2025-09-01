@@ -4,6 +4,26 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net; img-src 'self' https://cdn-icons-png.flaticon.com blob: data:; frame-src 'self' blob: data:; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;">
+  <!-- Prevent flash: hide body until language applied by renderer -->
+  <style>body{visibility:hidden}</style>
+  <script>
+    // Early language detection: set fx_lang on first visit based on browser preferences.
+    (function(){
+      try {
+        var key = 'fx_lang';
+        if (localStorage.getItem(key)) return;
+        var nav = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || 'fr'];
+        var chosen = 'fr';
+        for (var i=0;i<nav.length;i++){
+          var l = (nav[i] || '').toLowerCase();
+          if (!l) continue;
+          if (l === 'fr' || l.indexOf('fr-') === 0) { chosen = 'fr'; break; }
+          if (l === 'en' || l.indexOf('en-') === 0) { chosen = 'en'; break; }
+        }
+        localStorage.setItem(key, chosen);
+      } catch (e) { /* ignore */ }
+    })();
+  </script>
   <title>FusionX</title>
   <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/337/337946.png" type="image/png">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
