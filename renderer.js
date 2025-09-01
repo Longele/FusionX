@@ -143,6 +143,6 @@ async function generatePDF(isPreview) {
     a.href = downloadUrl;
     a.download = name.endsWith(".pdf") ? name : name + ".pdf";
     a.click();
-    URL.revokeObjectURL(downloadUrl);
+    setTimeout(() => URL.revokeObjectURL(downloadUrl), 100);
   }
 }
