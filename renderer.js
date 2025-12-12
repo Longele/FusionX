@@ -212,6 +212,7 @@ function renderList() {
     const rotateBtn = document.createElement("button");
     rotateBtn.className = "rotate-btn";
     rotateBtn.innerHTML = `🔄 <span class="angle">${entry.rotation}°</span>`;
+    rotateBtn.setAttribute("aria-label", "Rotate 90°");
     rotateBtn.onclick = () => {
       entry.rotation = (entry.rotation + 90) % 360;
       renderList();
@@ -222,13 +223,19 @@ function renderList() {
     const delBtn = document.createElement("button");
     delBtn.className = "delete-btn";
     delBtn.textContent = "❌";
+    delBtn.setAttribute("aria-label", "Delete file");
     delBtn.onclick = () => {
       filesData.splice(index, 1);
       renderList();
       document.getElementById("previewFrame").style.display = "none";
     };
 
-    div.append(thumb, name, rotateBtn, delBtn);
+    // Wrap buttons in container for mobile layout
+    const actions = document.createElement("div");
+    actions.className = "item-actions";
+    actions.append(rotateBtn, delBtn);
+
+    div.append(thumb, name, actions);
     previewList.appendChild(div);
   });
 }

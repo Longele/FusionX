@@ -174,6 +174,14 @@ h1 img { width: 28px; height: 28px; }
   transform: scale(1.2);
 }
 .angle { font-size: 0.8em; color: #555; }
+
+/* Item actions container */
+.item-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
 .btn-group {
   display: flex;
   justify-content: center;
@@ -307,6 +315,319 @@ iframe {
 
 .language-selector select:hover {
   border-color: var(--highlight);
+}
+
+/* =====================================================
+   MOBILE RESPONSIVE STYLES
+   ===================================================== */
+
+/* Base mobile adjustments */
+@media (max-width: 640px) {
+  body {
+    padding: 0;
+    align-items: flex-start;
+  }
+
+  .container {
+    border-radius: 0;
+    padding: 16px;
+    padding-bottom: 100px; /* space for sticky buttons */
+    max-width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+    justify-content: center;
+  }
+
+  /* Stack options vertically on mobile */
+  .options {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .options label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+    padding: 10px 0;
+  }
+
+  .options label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+  }
+
+  .right-controls {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  #themeToggle {
+    flex: 1;
+    padding: 12px 14px;
+    font-size: 0.9rem;
+  }
+
+  .lang-switch {
+    gap: 4px;
+  }
+
+  .lang-btn {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Controls row */
+  .controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .controls input[type="text"] {
+    width: 100%;
+    padding: 14px 12px;
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
+
+  .controls .btn {
+    width: 100%;
+    max-width: none;
+    padding: 14px;
+    font-size: 1rem;
+  }
+
+  /* Larger dropzone for touch */
+  .upload {
+    padding: 32px 16px;
+    font-size: 1rem;
+    line-height: 1.5;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* File list items - mobile optimized */
+  .item {
+    padding: 12px;
+    gap: 8px;
+    flex-wrap: nowrap;
+    position: relative;
+  }
+
+  .thumb {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+  }
+
+  .filename {
+    font-size: 0.9rem;
+    min-width: 0;
+    flex: 1;
+    padding: 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.05);
+  }
+
+  /* Stack rotate/delete buttons */
+  .item-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .rotate-btn, .delete-btn {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px;
+    font-size: 1.3em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+  }
+
+  .rotate-btn:active, .delete-btn:active {
+    transform: scale(0.95);
+    background: rgba(255,255,255,0.2);
+  }
+
+  .angle {
+    display: none; /* hide angle text on mobile to save space */
+  }
+
+  /* Sticky bottom action buttons */
+  .btn-group {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg);
+    padding: 12px 16px;
+    margin: 0;
+    gap: 10px;
+    border-top: 1px solid var(--light-gray);
+    box-shadow: 0 -4px 20px var(--shadow);
+    z-index: 100;
+    flex-wrap: nowrap;
+  }
+
+  .btn-group .btn {
+    flex: 1;
+    max-width: none;
+    padding: 16px 12px;
+    font-size: 0.95rem;
+  }
+
+  /* Preview iframe */
+  iframe {
+    height: 300px;
+    margin-bottom: 20px;
+  }
+
+  /* Footer */
+  .footer {
+    font-size: 0.75em;
+    padding: 10px 0;
+    margin-bottom: 80px; /* space for sticky buttons */
+  }
+
+  /* Toast positioning for mobile */
+  #toastContainer {
+    left: 16px;
+    right: 16px;
+    bottom: 90px; /* above sticky buttons */
+  }
+
+  .toast {
+    min-width: auto;
+    max-width: none;
+    width: 100%;
+  }
+
+  /* Status area */
+  #statusArea {
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  #spinner {
+    text-align: center;
+    padding: 10px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 380px) {
+  .container {
+    padding: 12px;
+    padding-bottom: 100px;
+  }
+
+  h1 {
+    font-size: 1.2rem;
+  }
+
+  h1 img {
+    width: 24px;
+    height: 24px;
+  }
+
+  #themeToggle {
+    font-size: 0.8rem;
+    padding: 10px 12px;
+  }
+
+  .lang-btn {
+    padding: 8px 10px;
+    min-width: 40px;
+    min-height: 40px;
+    font-size: 0.85rem;
+  }
+
+  .upload {
+    padding: 24px 12px;
+    font-size: 0.9rem;
+  }
+
+  .btn-group .btn {
+    padding: 14px 10px;
+    font-size: 0.85rem;
+  }
+
+  .thumb {
+    width: 40px;
+    height: 40px;
+  }
+
+  .filename {
+    font-size: 0.85rem;
+  }
+}
+
+/* Improve touch feedback */
+@media (hover: none) and (pointer: coarse) {
+  .btn:active {
+    transform: scale(0.97);
+    transition: transform 0.1s;
+  }
+
+  .upload:active {
+    transform: scale(0.98);
+    background-color: rgba(240, 248, 255, 0.4);
+  }
+
+  .lang-btn:active {
+    transform: scale(0.95);
+  }
+
+  #themeToggle:active {
+    transform: scale(0.97);
+  }
+
+  /* Remove hover effects on touch devices */
+  .btn:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .upload:hover {
+    transform: none;
+  }
+
+  #themeToggle:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+/* Safe area insets for notched phones */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  @media (max-width: 640px) {
+    .btn-group {
+      padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    }
+
+    .container {
+      padding-bottom: calc(100px + env(safe-area-inset-bottom));
+    }
+
+    #toastContainer {
+      bottom: calc(90px + env(safe-area-inset-bottom));
+    }
+  }
 }
 
 /* Toast / notification styles */
