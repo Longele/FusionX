@@ -31,7 +31,10 @@
 </head>
 <body>
   <div class="container">
-    <h1><img src="https://cdn-icons-png.flaticon.com/512/337/337946.png" alt="icon">FusionX</h1>
+    <header class="app-header">
+      <h1><img src="https://cdn-icons-png.flaticon.com/512/337/337946.png" alt="icon">FusionX<span id="fileCount" class="file-count" style="display:none">0</span></h1>
+      <p class="tagline" data-i18n="tagline">Combinez vos PDF et images en un clic</p>
+    </header>
     <div class="options">
       <label><input type="checkbox" id="fitA4" data-i18n="fitA4"> A4 auto</label>
       <div class="right-controls">
@@ -46,9 +49,17 @@
   <input type="text" id="filename" data-i18n-placeholder="filenamePlaceholder" placeholder="Nom du fichier (ex: fusion.pdf)" style="flex:1;padding:8px;border-radius:6px;border:1px solid #ccc;">
   <button class="btn" onclick="clearAll()" data-i18n="clearAllBtn">🗑️ Tout effacer</button>
     </div>
-  <div class="upload" id="dropzone" tabindex="0" role="button" data-i18n="dropzoneText" aria-label="Zone de dépôt de fichiers. Appuyez sur Entrée ou Espace pour ouvrir le sélecteur de fichiers">
-      Glisser-déposer ou cliquer pour sélectionner vos fichiers
+  <div class="upload" id="dropzone" tabindex="0" role="button" aria-label="Zone de dépôt de fichiers. Appuyez sur Entrée ou Espace pour ouvrir le sélecteur de fichiers">
+      <div class="upload-icon">📁</div>
+      <div class="upload-text" data-i18n="dropzoneText">Glisser-déposer ou cliquer pour sélectionner vos fichiers</div>
+      <div class="upload-hint" data-i18n="dropzoneHint">PDF, JPG, PNG acceptés</div>
       <input type="file" id="upload" multiple accept=".pdf,image/*" style="display: none">
+    </div>
+    <!-- Empty state -->
+    <div id="emptyState" class="empty-state">
+      <div class="empty-icon">📄</div>
+      <p data-i18n="emptyStateText">Vos fichiers apparaîtront ici</p>
+      <p class="empty-hint" data-i18n="emptyStateHint">Glissez pour réorganiser</p>
     </div>
     <div class="preview" id="previewList"></div>
     <div class="btn-group">

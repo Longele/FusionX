@@ -49,24 +49,36 @@ const translations = {
   fr: {
     fitA4: 'A4 auto',
     modeToggle: '🌙 Mode sombre',
-    dropzoneText: 'Glisser-déposer ou cliquer pour sélectionner vos fichiers',
+    dropzoneText: 'Glisser-déposer ou cliquer pour sélectionner',
+    dropzoneHint: 'PDF, JPG, PNG acceptés',
     previewBtn: '🔎 Visualiser',
-  generateBtn: '📄 Générer le PDF',
-  filenamePlaceholder: 'Nom du fichier (ex: fusion.pdf)',
-  clearAllBtn: '🗑️ Tout effacer',
-  spinnerText: 'Génération en cours…',
-  footerText: 'Développé avec ❤️ par Jeff Longele — vos fichiers ne sont jamais enregistrés.'
+    generateBtn: '📄 Générer le PDF',
+    filenamePlaceholder: 'Nom du fichier (ex: fusion.pdf)',
+    clearAllBtn: '🗑️ Tout effacer',
+    spinnerText: 'Génération en cours…',
+    footerText: 'Développé avec ❤️ par Jeff Longele — vos fichiers ne sont jamais enregistrés.',
+    tagline: 'Combinez vos PDF et images en un clic',
+    emptyStateText: 'Vos fichiers apparaîtront ici',
+    emptyStateHint: 'Glissez pour réorganiser',
+    fileAdded: 'fichier ajouté',
+    filesAdded: 'fichiers ajoutés'
   },
   en: {
     fitA4: 'Auto A4',
     modeToggle: '🌙 Dark mode',
-    dropzoneText: 'Drag & drop or click to select files',
+    dropzoneText: 'Drag & drop or click to select',
+    dropzoneHint: 'PDF, JPG, PNG accepted',
     previewBtn: '🔎 Preview',
-  generateBtn: '📄 Generate PDF',
-  filenamePlaceholder: 'File name (e.g. merged.pdf)',
-  clearAllBtn: '🗑️ Clear all',
-  spinnerText: 'Generating...',
-  footerText: 'Developed with ❤️ by Jeff Longele — your files are never saved.'
+    generateBtn: '📄 Generate PDF',
+    filenamePlaceholder: 'File name (e.g. merged.pdf)',
+    clearAllBtn: '🗑️ Clear all',
+    spinnerText: 'Generating...',
+    footerText: 'Developed with ❤️ by Jeff Longele — your files are never saved.',
+    tagline: 'Combine your PDFs and images in one click',
+    emptyStateText: 'Your files will appear here',
+    emptyStateHint: 'Drag to reorder',
+    fileAdded: 'file added',
+    filesAdded: 'files added'
   }
 };
 
@@ -169,23 +181,52 @@ function handleFiles(fileList) {
     console.log('handleFiles: no files to handle');
     return;
   }
-  console.log('handleFiles called with', list.length, 'files');
+  const count = list.length;
+  console.log('handleFiles called with', count, 'files');
   for (const file of list) filesData.push({ file, rotation: 0, displayName: file.name });
   renderList();
   // reset hidden input so selecting the same file again triggers change
   if (fileInput) try { fileInput.value = ''; } catch (e) { /* ignore */ }
+  // Show toast for added files
+  const msg = count === 1 ? `1 ${t('fileAdded')}` : `${count} ${t('filesAdded')}`;
+  showToast(msg, 'success', 2500);
+}
+
+function updateFileCount() {
+  const badge = document.getElementById('fileCount');
+  const emptyState = document.getElementById('emptyState');
+  if (badge) {
+    badge.textContent = filesData.length;
+    badge.style.display = filesData.length > 0 ? 'inline-flex' : 'none';
+  }
+  if (emptyState) {
+    emptyState.style.display = filesData.length === 0 ? 'flex' : 'none';
+  }
 }
 
 function renderList() {
   console.log('renderList called, filesData length:', filesData.length);
   previewList.innerHTML = "";
+  updateFileCount();
   filesData.forEach((entry, index) => {
     const div = document.createElement("div");
     div.className = "item";
     div.setAttribute("draggable", true);
     div.dataset.index = index;
-    div.addEventListener("dragstart", () => draggedIndex = index);
-    div.addEventListener("dragover", e => e.preventDefault());
+    
+    // Drag events with visual feedback
+    div.addEventListener("dragstart", (e) => {
+      draggedIndex = index;
+      div.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    div.addEventListener("dragend", () => {
+      div.classList.remove('dragging');
+    });
+    div.addEventListener("dragover", e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    });
     div.addEventListener("drop", () => {
       const item = filesData.splice(draggedIndex, 1)[0];
       filesData.splice(index, 0, item);
@@ -194,6 +235,13 @@ function renderList() {
       clearTimeout(previewTimeout);
       previewTimeout = setTimeout(() => generatePDF(true), DEBOUNCE_MS);
     });
+
+    // Touch-friendly drag for mobile
+    let touchStartY = 0;
+    div.addEventListener("touchstart", (e) => {
+      touchStartY = e.touches[0].clientY;
+      draggedIndex = index;
+    }, { passive: true });
 
     const thumb = document.createElement("div");
     thumb.className = "thumb";
@@ -225,9 +273,15 @@ function renderList() {
     delBtn.textContent = "❌";
     delBtn.setAttribute("aria-label", "Delete file");
     delBtn.onclick = () => {
-      filesData.splice(index, 1);
-      renderList();
-      document.getElementById("previewFrame").style.display = "none";
+      // Animate removal
+      div.style.transition = 'opacity 0.2s, transform 0.2s';
+      div.style.opacity = '0';
+      div.style.transform = 'translateX(-20px)';
+      setTimeout(() => {
+        filesData.splice(index, 1);
+        renderList();
+        document.getElementById("previewFrame").style.display = "none";
+      }, 200);
     };
 
     // Wrap buttons in container for mobile layout

@@ -16,6 +16,41 @@ body.dark {
   --shadow: rgba(255, 255, 255, 0.1);
   --glass-blur: blur(12px);
 }
+
+/* Dark mode specific adjustments */
+body.dark .upload {
+  background-color: rgba(155, 89, 182, 0.08);
+  border-color: var(--highlight);
+}
+
+body.dark .upload:hover {
+  background-color: rgba(155, 89, 182, 0.15);
+}
+
+body.dark .item {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+body.dark .item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body.dark .thumb {
+  background: #444;
+}
+
+body.dark .angle {
+  color: #999;
+}
+
+body.dark .filename {
+  background: rgba(255,255,255,0.03);
+}
+
+body.dark .empty-state {
+  opacity: 0.4;
+}
+
 body {
   font-family: 'Inter', sans-serif;
   margin: 0;
@@ -43,8 +78,54 @@ body {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
-h1 { display: flex; align-items: center; gap: 10px; font-size: 1.6rem; font-weight: bold; }
+
+/* App header with tagline */
+.app-header {
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+h1 { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  gap: 10px; 
+  font-size: 1.6rem; 
+  font-weight: bold;
+  margin-bottom: 4px;
+}
 h1 img { width: 28px; height: 28px; }
+
+.tagline {
+  font-size: 0.9rem;
+  color: var(--text);
+  opacity: 0.7;
+  margin: 0;
+}
+
+/* File count badge */
+.file-count {
+  background: var(--highlight);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  animation: popIn 0.2s ease;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0); }
+  70% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
 .controls, .options {
   margin-top: 15px;
   display: flex;
@@ -80,18 +161,65 @@ h1 img { width: 28px; height: 28px; }
 }
 .upload {
   margin-top: 15px;
-  padding: 20px;
+  padding: 24px 20px;
   border: 2px dashed var(--highlight);
   text-align: center;
-  border-radius: 10px;
-  background-color: rgba(240, 248, 255, 0.2);
+  border-radius: 12px;
+  background-color: rgba(240, 248, 255, 0.15);
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.3s ease;
+  transition: all 0.3s ease;
 }
+
+.upload-icon {
+  font-size: 2.2rem;
+  margin-bottom: 8px;
+  opacity: 0.8;
+}
+
+.upload-text {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.upload-hint {
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
+
 .upload:hover {
   background-color: rgba(240, 248, 255, 0.3);
-  transform: scale(1.02);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(52, 152, 219, 0.15);
 }
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  color: var(--text);
+  opacity: 0.5;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.empty-state p {
+  margin: 4px 0;
+  font-size: 0.95rem;
+}
+
+.empty-hint {
+  font-size: 0.8rem !important;
+  opacity: 0.7;
+}
+
 .preview {
   margin-top: 15px;
   display: flex;
@@ -137,7 +265,29 @@ h1 img { width: 28px; height: 28px; }
   padding: 10px;
   cursor: grab;
   flex-wrap: wrap;
+  animation: slideIn 0.25s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+.item:hover {
+  transform: translateX(4px);
+  box-shadow: -4px 0 0 var(--highlight);
+}
+
+.item:active {
+  cursor: grabbing;
+}
+
+.item.dragging {
+  opacity: 0.5;
+  transform: scale(0.98);
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
 .thumb {
   width: 40px;
   height: 40px;
@@ -342,6 +492,16 @@ iframe {
     justify-content: center;
   }
 
+  .tagline {
+    font-size: 0.85rem;
+  }
+
+  .file-count {
+    font-size: 0.7rem;
+    min-width: 18px;
+    height: 18px;
+  }
+
   /* Stack options vertically on mobile */
   .options {
     flex-direction: column;
@@ -408,14 +568,35 @@ iframe {
 
   /* Larger dropzone for touch */
   .upload {
-    padding: 32px 16px;
-    font-size: 1rem;
-    line-height: 1.5;
+    padding: 28px 16px;
     min-height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+    flex-direction: column;
+  }
+
+  .upload-icon {
+    font-size: 2rem;
+    margin-bottom: 6px;
+  }
+
+  .upload-text {
+    font-size: 0.9rem;
+  }
+
+  .upload-hint {
+    font-size: 0.75rem;
+  }
+
+  /* Empty state mobile */
+  .empty-state {
+    padding: 24px 16px;
+  }
+
+  .empty-icon {
+    font-size: 2rem;
+  }
+
+  .empty-state p {
+    font-size: 0.9rem;
   }
 
   /* File list items - mobile optimized */
