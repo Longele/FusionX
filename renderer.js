@@ -88,6 +88,16 @@ translations.fr.genError = 'Erreur lors de la génération du PDF:';
 translations.en.addFiles = 'Please add files';
 translations.en.genError = 'Error generating PDF:';
 
+// compression option labels
+translations.fr.compressLabel  = 'Compresser';
+translations.fr.qualityHigh    = 'Haute qualité';
+translations.fr.qualityMedium  = 'Qualité moyenne';
+translations.fr.qualityLow     = 'Basse qualité';
+translations.en.compressLabel  = 'Compress';
+translations.en.qualityHigh    = 'High quality';
+translations.en.qualityMedium  = 'Medium quality';
+translations.en.qualityLow     = 'Low quality';
+
 function setLanguage(lang) {
   const active = translations[lang] ? lang : 'fr';
   localStorage.setItem('fx_lang', active);
@@ -121,7 +131,35 @@ document.addEventListener('DOMContentLoaded', () => {
   updateLangButtons(pref);
   if (btnFr) btnFr.addEventListener('click', () => { setLanguage('fr'); updateLangButtons('fr'); });
   if (btnEn) btnEn.addEventListener('click', () => { setLanguage('en'); updateLangButtons('en'); });
+
+  // show/hide quality selector when compress checkbox is toggled
+  const compressChk = document.getElementById('compressPdf');
+  const qualitySel  = document.getElementById('compressQuality');
+  if (compressChk) compressChk.addEventListener('change', () => {
+    if (qualitySel) qualitySel.style.display = compressChk.checked ? 'inline-block' : 'none';
+  });
 });
+
+async function compressImageBuffer(buffer, mimeType, quality) {
+  return new Promise((resolve) => {
+    const blob = new Blob([buffer], { type: mimeType });
+    const url  = URL.createObjectURL(blob);
+    const img  = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width  = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+      URL.revokeObjectURL(url);
+      canvas.toBlob(
+        (compressed) => compressed.arrayBuffer().then(resolve),
+        'image/jpeg',
+        quality
+      );
+    };
+    img.src = url;
+  });
+}
 
 function setSpinner(visible) {
   const spinner = document.getElementById('spinner');
@@ -309,7 +347,9 @@ async function generatePDF(isPreview) {
   setSpinner(true);
     const { PDFDocument, degrees } = PDFLib;
     const pdfDoc = await PDFDocument.create();
-    const fitToA4 = document.getElementById("fitA4").checked;
+    const fitToA4  = document.getElementById("fitA4").checked;
+    const compress = document.getElementById('compressPdf')?.checked || false;
+    const quality  = parseFloat(document.getElementById('compressQuality')?.value || '0.65');
 
   for (const entry of filesData) {
     const file = entry.file;
@@ -327,7 +367,10 @@ async function generatePDF(isPreview) {
         pdfDoc.addPage(p);
       });
     } else if (file.type && file.type.startsWith("image/")) {
-      const embed = file.type.includes("png") ? await pdfDoc.embedPng(buffer) : await pdfDoc.embedJpg(buffer);
+      let imgBuffer = buffer;
+      if (compress) imgBuffer = await compressImageBuffer(buffer, file.type, quality);
+      const embed = compress ? await pdfDoc.embedJpg(imgBuffer)
+                             : (file.type.includes("png") ? await pdfDoc.embedPng(buffer) : await pdfDoc.embedJpg(buffer));
       const dims = fitToA4 ? [595.28, 841.89] : [embed.width, embed.height];
       const page = pdfDoc.addPage(dims);
       const scale = fitToA4 ? Math.min(dims[0] / embed.width, dims[1] / embed.height) : 1;
@@ -343,7 +386,7 @@ async function generatePDF(isPreview) {
     }
   }
 
-  const pdfBytes = await pdfDoc.save();
+  const pdfBytes = await pdfDoc.save(compress ? { useObjectStreams: true } : undefined);
   const blob = new Blob([pdfBytes], { type: "application/pdf" });
   if (isPreview) {
     const url = URL.createObjectURL(blob);
